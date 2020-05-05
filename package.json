@@ -1,0 +1,30 @@
+{
+  "name": "markdown-it-directive",
+  "version": "1.0.0",
+  "description": "Directive extension for markdown-it markdown parser.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hilookas/markdown-it-directive.git"
+  },
+  "keywords": [
+    "markdown-it",
+    "markdown-it-plugin",
+    "directive",
+    "plugin",
+    "framework",
+    "commonmark"
+  ],
+  "author": "lookas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hilookas/markdown-it-directive/issues"
+  },
+  "homepage": "https://github.com/hilookas/markdown-it-directive#readme",
+  "dependencies": {
+    "markdown-it": "^10.0.0"
+  }
+}

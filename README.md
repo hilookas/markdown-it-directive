@@ -54,7 +54,7 @@ content
 
 The name of the `handler`, which is the key of the array, only allows lowercase letters and `-`, the directive name in the document is case-insensitive, and all `_` will be converted into `-` to find the corresponding `handler`.
 
-`handler` will receive the parsed link destinations (ie those in `()`) (ie `dests`), attributes (ie `attrs`), unescaped `content` and the position of each component of the directive, and needs to store processed things in the MarkdownIt Token stream. Full details can be found in [markdown-it-directive-webcomponents] (https://github.com/hilookas/markdown-it-directive-webcomponents).
+`handler` will receive the parsed link destinations (ie those in `()`) (ie `dests`), attributes (ie `attrs`), not unescaped `content` and the position of each component of the directive, and needs to store processed things in the MarkdownIt Token stream. Full details can be found in [markdown-it-directive-webcomponents] (https://github.com/hilookas/markdown-it-directive-webcomponents).
 
 ## Example
 

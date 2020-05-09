@@ -52,7 +52,7 @@ content
 
 `handler` 的名称，即数组的键名，仅仅允许小写字母和 `-`，文档中指令名不区分大小写，且所有的 `_` 会被转换成 `-` 来查找对应的 `handler`。
 
-`handler` 需要接收已经解析过的 link destinations （即括号中的那些）（即 `dests`）， attributes （即 `attrs`），未转义的 `content` 以及指令的各个组件的位置，并且将处理后的内容添加到 MarkdownIt Token 流中。具体处理过程可以参见 [markdown-it-directive-webcomponents](https://github.com/hilookas/markdown-it-directive-webcomponents) 代码。
+`handler` 需要接收已经解析过的 link destinations （即括号中的那些）（即 `dests`）， attributes （即 `attrs`），未反转义的 `content` 以及指令的各个组件的位置，并且将处理后的内容添加到 MarkdownIt Token 流中。具体处理过程可以参见 [markdown-it-directive-webcomponents](https://github.com/hilookas/markdown-it-directive-webcomponents) 代码。
 
 ## 样例
 

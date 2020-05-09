@@ -273,6 +273,16 @@ function inlineDirectiveRule(state, silent) {
 
   // Tokenlize
   if (!silent) {
+    // markdown-it uses escape rule to unescape content in `[text]`,
+    // and use unescapeAll function to unescape content in `"title"`.
+    //
+    // Directive handler needs to use unescapeAll manually
+    // since different plugins have different demands
+    // (some treat the content as markdown and continue to parse it,
+    // others treat the content as text so they need to unescape it).
+    //
+    // Markdown's design that paired `[]` doesn't need to be escaped
+    // avoids "escape melaleuca" like `[\[\\[\\]\]]`. Clever design.
     handler(state, content, dests, attrs, contentStart, contentEnd, state.pos, pos);
   }
 

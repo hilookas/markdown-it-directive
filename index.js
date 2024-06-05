@@ -284,7 +284,7 @@ function inlineDirectiveRule(state, silent) {
     // Markdown's design that paired `[]` doesn't need to be escaped
     // avoids "escape melaleuca" like `[\[\\[\\]\]]`. Clever design.
     const isValidContent = handler(state, content, dests, attrs, contentStart, contentEnd, state.pos, pos);
-    if (!isValidContent) return false;
+    if (isValidContent === false) return false;
   }
 
   state.pos = pos;
@@ -382,7 +382,7 @@ function blockDirectiveRule(state, startLine, endLine, silent) {
       inlineContentStart, inlineContentEnd,
       startLine, nextLine
     );
-    if (!isValidContent) return false;
+    if (isValidContent === false) return false;
   }
 
   state.line = nextLine;

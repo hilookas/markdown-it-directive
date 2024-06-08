@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/hilookas/markdown-it-directive#readme",
   "dependencies": {
-    "markdown-it": "^12.3.2"
+    "markdown-it": "^11.0.0"
   }
 }

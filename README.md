@@ -12,23 +12,27 @@ Recommended for using with [markdown-it-directive-webcomponents](https://github.
 
 `npm i markdown-it-directive`
 
+## Required dependencies
+
+Please note that to start using the package, your project must also have the following installed: `markdown-it`, `@types/markdown-it`. Check out the `peerDependencies` section of `package.json` for accurate information.
+
 ## API
 
 ```javascript
 const md = require('markdown-it')()
   .use(require('markdown-it-directive'))
   .use((md) => {
-    md.inlineDirectives['aaa'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+    md.inlineDirectives['aaa'] = ({state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd}) => {
       //
     };
 
-    md.blockDirectives['aaa'] = (
+    md.blockDirectives['aaa'] = ({
       state, content, contentTitle, inlineContent, dests, attrs,
       contentStartLine, contentEndLine,
       contentTitleStart, contentTitleEnd,
       inlineContentStart, inlineContentEnd,
       directiveStartLine, directiveEndLine
-    ) => {
+    }) => {
       //
     };
   });

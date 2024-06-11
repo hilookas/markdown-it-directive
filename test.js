@@ -21,30 +21,27 @@ const cases = [
     const md = (new MarkdownIt())
       .use(directivePlugin)
       .use((md) => {
-        md.inlineDirectives['aaa'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+        md.inlineDirectives['aaa'] = ({state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd}) => {
           const token = state.push('html_inline', '', 0);
           token.content = JSON.stringify({ directive: 'aaa', content, dests, attrs });
         };
-        md.inlineDirectives['a-a'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+        md.inlineDirectives['a-a'] = ({state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd}) => {
           const token = state.push('html_inline', '', 0);
           token.content = JSON.stringify({ directive: 'a-a', content, dests, attrs });
         };
-        md.inlineDirectives['a_a'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+        md.inlineDirectives['a_a'] = ({state, content, dests, attrs}) => {
           const token = state.push('html_inline', '', 0);
           token.content = JSON.stringify({ directive: 'a_a', content, dests, attrs });
         };
-        md.inlineDirectives['bbb'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+        md.inlineDirectives['bbb'] = ({state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd}) => {
           const token = state.push('html_inline', '', 0);
           token.content = JSON.stringify({ directive: 'bbb', content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd });
         };
 
-        md.blockDirectives['aaa'] = (
+        md.blockDirectives['aaa'] = ({
           state, content, contentTitle, inlineContent, dests, attrs,
-          contentStartLine, contentEndLine,
-          contentTitleStart, contentTitleEnd,
-          inlineContentStart, inlineContentEnd,
           directiveStartLine, directiveEndLine
-        ) => {
+        }) => {
           const token = state.push('html_block', '', 0);
           token.map = [ directiveStartLine, directiveEndLine ];
           token.content = JSON.stringify({
@@ -52,13 +49,10 @@ const cases = [
           });
         };
 
-        md.blockDirectives['c-c'] = (
+        md.blockDirectives['c-c'] = ({
           state, content, contentTitle, inlineContent, dests, attrs,
-          contentStartLine, contentEndLine,
-          contentTitleStart, contentTitleEnd,
-          inlineContentStart, inlineContentEnd,
           directiveStartLine, directiveEndLine
-        ) => {
+        }) => {
           const token = state.push('html_block', '', 0);
           token.map = [ directiveStartLine, directiveEndLine ];
           token.content = JSON.stringify({
@@ -66,13 +60,10 @@ const cases = [
           });
         };
 
-        md.blockDirectives['a'] = (
+        md.blockDirectives['a'] = ({
           state, content, contentTitle, inlineContent, dests, attrs,
-          contentStartLine, contentEndLine,
-          contentTitleStart, contentTitleEnd,
-          inlineContentStart, inlineContentEnd,
           directiveStartLine, directiveEndLine
-        ) => {
+        }) => {
           const token = state.push('html_block', '', 0);
           token.map = [ directiveStartLine, directiveEndLine ];
           token.content = JSON.stringify({
@@ -80,13 +71,13 @@ const cases = [
           });
         };
 
-        md.blockDirectives['bbb'] = (
+        md.blockDirectives['bbb'] = ({
           state, content, contentTitle, inlineContent, dests, attrs,
           contentStartLine, contentEndLine,
           contentTitleStart, contentTitleEnd,
           inlineContentStart, inlineContentEnd,
           directiveStartLine, directiveEndLine
-        ) => {
+        }) => {
           const token = state.push('html_block', '', 0);
           token.map = [ directiveStartLine, directiveEndLine ];
           token.content = JSON.stringify({
@@ -108,7 +99,7 @@ const cases = [
     // should indicate destination type
     // should recognize not surrounded attr value
     assert(
-      md.renderInline(':aaa[1[2](3)4](a123 /c2/34 "vv43" <aaf2> \'aa1d\' (tt(tt)){a_fd=ff-f aa-a="aa14" .1cla-ss1 .cla--ss2 #ida1 #ida2}')
+      md.renderInline(':aaa[1[2](3)4](a123 /c2/34 "vv43" <aaf2> \'aa1d\' (tt\\(tt)){a_fd=ff-f aa-a="aa14" .1cla-ss1 .cla--ss2 #ida1 #ida2}')
       ===
       '{"directive":"aaa","content":"1[2](3)4","dests":[["link","a123"],["link","/c2/34"],["string","vv43"],["link","aaf2"],["string","aa1d"],["string","tt(tt"]],"attrs":{"a_fd":"ff-f","aa-a":"aa14","class":["1cla-ss1","cla--ss2"],"id":["ida1","ida2"]}}'
     );
@@ -116,7 +107,7 @@ const cases = [
     // should ignore `a_a` directive (directive name normalize)
     // should recognize `\n` as attr kv spliter
     assert(
-      md.renderInline(':aaa[1[2](3)4](a123 /c2/34 "vv43" <aaf2> \'aa1d\' (tt(tt)){a_fd=ff-f aa-a="aa14" .1cla-ss1 .cla--ss2 #ida1 #ida2}')
+      md.renderInline(':aaa[1[2](3)4](a123 /c2/34 "vv43" <aaf2> \'aa1d\' (tt\\(tt)){a_fd=ff-f aa-a="aa14" .1cla-ss1 .cla--ss2 #ida1 #ida2}')
       ===
       '{"directive":"aaa","content":"1[2](3)4","dests":[["link","a123"],["link","/c2/34"],["string","vv43"],["link","aaf2"],["string","aa1d"],["string","tt(tt"]],"attrs":{"a_fd":"ff-f","aa-a":"aa14","class":["1cla-ss1","cla--ss2"],"id":["ida1","ida2"]}}'
     );
@@ -137,7 +128,7 @@ const cases = [
 
     // should pair `()` correct
     assert(
-      md.renderInline(':aaa[aaa](((/aaa)))){}')
+      md.renderInline(':aaa[aaa]((\\(/aaa)))){}')
       ===
       '{"directive":"aaa","content":"aaa","dests":[["string","(/aaa"]]})){}'
     );
@@ -251,7 +242,7 @@ const cases = [
     assert(
       md.render(`2333
 
-:::: bbb [1[2](3)45\\]5] (a123 /c2/34 "vv43" <aaf2> 'aa1d' (tt(tt)) {a_fd=ff-f aa-a="aa14" .1cla-ss1 .cla--ss2 #ida1 #ida2}  23333!JLJ:@@  :::
+:::: bbb [1[2](3)45\\]5] (a123 /c2/34 "vv43" <aaf2> 'aa1d' (tt\\(tt)) {a_fd=ff-f aa-a="aa14" .1cla-ss1 .cla--ss2 #ida1 #ida2}  23333!JLJ:@@  :::
 kjdfoqejfoijoivlwi1123124
 :: 123notexist
 :::    123notexist
@@ -261,7 +252,7 @@ nextlineend
 :::
 233444`)
       ===
-      '<p>2333</p>\n{"directive":"bbb(B)","content":"kjdfoqejfoijoivlwi1123124\\n:: 123notexist\\n:::    123notexist\\n:::\\nnextlineend\\n","contentTitle":"23333!JLJ:@@","inlineContent":"1[2](3)45\\\\]5","dests":[["link","a123"],["link","/c2/34"],["string","vv43"],["link","aaf2"],["string","aa1d"],["string","tt(tt"]],"attrs":{"a_fd":"ff-f","aa-a":"aa14","class":["1cla-ss1","cla--ss2"],"id":["ida1","ida2"]},"contentStartLine":3,"contentEndLine":8,"contentTitleStart":130,"contentTitleEnd":142,"inlineContentStart":16,"inlineContentEnd":28,"directiveStartLine":2,"directiveEndLine":9}<p>:::\n233444</p>\n'
+      '<p>2333</p>\n{"directive":"bbb(B)","content":"kjdfoqejfoijoivlwi1123124\\n:: 123notexist\\n:::    123notexist\\n:::\\nnextlineend\\n","contentTitle":"23333!JLJ:@@","inlineContent":"1[2](3)45\\\\]5","dests":[["link","a123"],["link","/c2/34"],["string","vv43"],["link","aaf2"],["string","aa1d"],["string","tt(tt"]],"attrs":{"a_fd":"ff-f","aa-a":"aa14","class":["1cla-ss1","cla--ss2"],"id":["ida1","ida2"]},"contentStartLine":3,"contentEndLine":8,"contentTitleStart":131,"contentTitleEnd":143,"inlineContentStart":16,"inlineContentEnd":28,"directiveStartLine":2,"directiveEndLine":9}<p>:::\n233444</p>\n'
     );
 
     // should treat this like a link

@@ -1,8 +1,5 @@
 'use strict';
 
-const parseLinkLabel = require('markdown-it/lib/helpers/parse_link_label');
-const parseLinkTitle = require('markdown-it/lib/helpers/parse_link_title');
-const parseLinkDestination = require('markdown-it/lib/helpers/parse_link_destination');
 const { normalizeReference } = require('markdown-it/lib/common/utils');
 const StateInline = require('markdown-it/lib/rules_inline/state_inline');
 
@@ -45,7 +42,7 @@ function parseDirectiveName(src, pos, max) {
   return { pos, name: normalizeDirectiveName(src.slice(oldPos, pos)) };
 }
 
-function parseLinkDestinationLabel(src, pos, max) {
+function parseLinkDestinationLabel(md, src, pos, max) {
   if (pos >= max) return null;
   if (src.charCodeAt(pos) !== 0x28/* ( */) return null;
 
@@ -60,13 +57,13 @@ function parseLinkDestinationLabel(src, pos, max) {
     const c = src.charCodeAt(pos);
     if (c === 0x22/* " */ || c === 0x27/* ' */ || c === 0x28/* ( */) {
       // String
-      const rst = parseLinkTitle(src, pos, max);
+      const rst = md.helpers.parseLinkTitle(src, pos, max);
       if (!rst.ok) return null;
       pos = rst.pos;
       dests.push([ 'string', rst.str ]);
     } else {
       // Link
-      const rst = parseLinkDestination(src, pos, max);
+      const rst = md.helpers.parseLinkDestination(src, pos, max);
       if (!rst.ok) return null;
       pos = rst.pos;
       dests.push([ 'link', rst.str ]);
@@ -107,7 +104,7 @@ function parseUnsurroundedName(src, pos, max) {
   return { pos, name: src.slice(oldPos, pos) };
 }
 
-function parseAttrLabel(src, pos, max) {
+function parseAttrLabel(md, src, pos, max) {
   if (pos >= max) return null;
   if (src.charCodeAt(pos) !== 0x7B/* { */) return null;
 
@@ -166,7 +163,7 @@ function parseAttrLabel(src, pos, max) {
       let value;
       const c = src.charCodeAt(pos);
       if (c === 0x22/* " */ || c === 0x27/* ' */) {
-        rst = parseLinkTitle(src, pos, max);
+        rst = md.helpers.parseLinkTitle(src, pos, max);
         if (!rst.ok) return null;
         value = rst.str;
         pos = rst.pos;
@@ -206,7 +203,7 @@ function parseDirective(state, src, pos, max, allowSpaceBetween) {
 
   // Link text (optional)
   const labelStart = pos,
-        labelEnd = parseLinkLabel(state, labelStart);
+        labelEnd = md.helpers.parseLinkLabel(state, labelStart);
   let content;
   let contentStart, contentEnd;
   if (labelEnd >= 0) {
@@ -219,14 +216,14 @@ function parseDirective(state, src, pos, max, allowSpaceBetween) {
 
   // Link destinations (optional)
   const destsStart = pos;
-  const destsResult = parseLinkDestinationLabel(src, destsStart, max);
+  const destsResult = parseLinkDestinationLabel(md, src, destsStart, max);
   let dests;
   if (destsResult !== null) {
     dests = destsResult.dests;
     pos = destsResult.pos;
   } else if (typeof state.env.references !== 'undefined') {
     // Reference mode
-    const destsEnd = parseLinkLabel(state, destsStart);
+    const destsEnd = md.helpers.parseLinkLabel(state, destsStart);
     if (destsEnd >= 0) {
       const refText = src.slice(destsStart + 1, destsEnd);
       const ref = state.env.references[normalizeReference(refText)];
@@ -244,7 +241,7 @@ function parseDirective(state, src, pos, max, allowSpaceBetween) {
   if (allowSpaceBetween) pos = skipBlanks(src, pos, max);
 
   // Parse attributes (optional)
-  const attrsResult = parseAttrLabel(src, pos, max);
+  const attrsResult = parseAttrLabel(md, src, pos, max);
   let attrs;
   if (attrsResult !== null) {
     attrs = attrsResult.attrs;
@@ -283,7 +280,16 @@ function inlineDirectiveRule(state, silent) {
     //
     // Markdown's design that paired `[]` doesn't need to be escaped
     // avoids "escape melaleuca" like `[\[\\[\\]\]]`. Clever design.
-    const isValidContent = handler(state, content, dests, attrs, contentStart, contentEnd, state.pos, pos);
+    const isValidContent = handler({
+      state,
+      content,
+      dests,
+      attrs,
+      contentStart,
+      contentEnd,
+      directiveStart: state.pos,
+      directiveEnd: pos
+    });
     if (isValidContent === false) return false;
   }
 
@@ -335,7 +341,7 @@ function blockDirectiveRule(state, startLine, endLine, silent) {
 
   // parseLinkLabel need a StateInline state instead of StateBlock state
   // which don't have a skipToken method
-  const inlineState = new StateInline(src, md, state.env, {});
+  const inlineState = new StateInline(src, md, state.env, []);
   const rst = parseDirective(inlineState, src, pos, max, true);
   if (rst === null) return false;
   const { directiveName, content: inlineContent, dests, attrs, contentStart: inlineContentStart, contentEnd: inlineContentEnd } = rst;
@@ -358,13 +364,20 @@ function blockDirectiveRule(state, startLine, endLine, silent) {
   if (oneLine) {
     // Tokenlize
     if (!silent) {
-      handler(
-        state, undefined, contentTitle, inlineContent, dests, attrs,
-        undefined, undefined,
-        contentTitleStart, contentTitleEnd,
-        inlineContentStart, inlineContentEnd,
-        startLine, startLine + 1
-      );
+      const isValidContent = handler({
+        state,
+        contentTitle,
+        inlineContent,
+        dests,
+        attrs,
+        contentTitleStart,
+        contentTitleEnd,
+        inlineContentStart,
+        inlineContentEnd,
+        directiveStartLine: startLine,
+        directiveEndLine: startLine + 1
+      });
+      if (isValidContent === false) return false;
     }
 
     state.line = startLine + 1;
@@ -375,13 +388,22 @@ function blockDirectiveRule(state, startLine, endLine, silent) {
   if (nextLine === -1) return false; // cannot find matched close mark (:::)
   const content = state.getLines(startLine + 1, nextLine - 1, state.sCount[startLine], true);
   if (!silent) {
-    const isValidContent = handler(
-      state, content, contentTitle, inlineContent, dests, attrs,
-      startLine + 1, nextLine - 1,
-      contentTitleStart, contentTitleEnd,
-      inlineContentStart, inlineContentEnd,
-      startLine, nextLine
-    );
+    const isValidContent = handler({
+      state,
+      content,
+      contentTitle,
+      inlineContent,
+      dests,
+      attrs,
+      contentStartLine: startLine + 1,
+      contentEndLine: nextLine - 1,
+      contentTitleStart,
+      contentTitleEnd,
+      inlineContentStart,
+      inlineContentEnd,
+      directiveStartLine: startLine,
+      directiveEndLine: nextLine
+    });
     if (isValidContent === false) return false;
   }
 

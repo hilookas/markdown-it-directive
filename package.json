@@ -1,8 +1,9 @@
 {
   "name": "markdown-it-directive",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Directive extension for markdown-it markdown parser.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "node test.js"
   },
@@ -24,7 +25,12 @@
     "url": "https://github.com/hilookas/markdown-it-directive/issues"
   },
   "homepage": "https://github.com/hilookas/markdown-it-directive#readme",
-  "dependencies": {
-    "markdown-it": "^11.0.0"
+  "devDependencies": {
+    "markdown-it": "^12.0.0 || ^13.0.0",
+    "@types/markdown-it": "^12.0.0 || ^13.0.0"
+  },
+  "peerDependencies": {
+    "markdown-it": "^12.0.0 || ^13.0.0",
+    "@types/markdown-it": "^12.0.0 || ^13.0.0"
   }
 }

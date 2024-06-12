@@ -1,6 +1,6 @@
 {
   "name": "markdown-it-directive",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Directive extension for markdown-it markdown parser.",
   "main": "index.js",
   "types": "index.d.ts",

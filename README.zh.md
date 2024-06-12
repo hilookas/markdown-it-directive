@@ -10,23 +10,27 @@
 
 `npm i markdown-it-directive`
 
+## 所需依赖
+
+需要提前安装 `markdown-it`, `@types/markdown-it` ，详情参见 `package.json` 中的 `peerDependencies` 部分。
+
 ## API
 
 ```javascript
 const md = require('markdown-it')()
   .use(require('markdown-it-directive'))
   .use((md) => {
-    md.inlineDirectives['aaa'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+    md.inlineDirectives['aaa'] = ({state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd}) => {
       //
     };
 
-    md.blockDirectives['aaa'] = (
+    md.blockDirectives['aaa'] = ({
       state, content, contentTitle, inlineContent, dests, attrs,
       contentStartLine, contentEndLine,
       contentTitleStart, contentTitleEnd,
       inlineContentStart, inlineContentEnd,
       directiveStartLine, directiveEndLine
-    ) => {
+    }) => {
       //
     };
   });
@@ -60,18 +64,18 @@ content
 const md = require('markdown-it')()
   .use(require('markdown-it-directive'))
   .use((md) => {
-    md.inlineDirectives['directive-name'] = (state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd) => {
+    md.inlineDirectives['directive-name'] = ({state, content, dests, attrs, contentStart, contentEnd, directiveStart, directiveEnd}) => {
       const token = state.push('html_inline', '', 0);
       token.content = JSON.stringify({ directive: 'directive-name', content, dests, attrs }) + '\n';
     };
 
-    md.blockDirectives['directive-name'] = (
+    md.blockDirectives['directive-name'] = ({
       state, content, contentTitle, inlineContent, dests, attrs,
       contentStartLine, contentEndLine,
       contentTitleStart, contentTitleEnd,
       inlineContentStart, inlineContentEnd,
       directiveStartLine, directiveEndLine
-    ) => {
+    }) => {
       const token = state.push('html_block', '', 0);
       token.map = [ directiveStartLine, directiveEndLine ];
       token.content = JSON.stringify({

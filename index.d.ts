@@ -1,4 +1,4 @@
-import DefaultMarkdownIt from 'markdown-it';
+import DefaultMarkdownIt, {PluginSimple} from 'markdown-it';
 import * as StateInline from 'markdown-it/lib/rules_inline/state_inline';
 import * as StateBlock from 'markdown-it/lib/rules_block/state_block';
 
@@ -28,8 +28,8 @@ interface BlockHandlerArgs {
     directiveStartLine: number;
     directiveEndLine: number;
 }
-type InlineHandler = (args: Partial<DirectiveInlineHandlerArgs>) => boolean | void;
-type BlockHandler = (args: Partial<DirectiveBlockHandlerArgs>) => boolean | void;
+type InlineHandler = (args: DirectiveInlineHandlerArgs) => boolean | void;
+type BlockHandler = (args: DirectiveBlockHandlerArgs) => boolean | void;
 
 export type DirectiveInlineHandler = InlineHandler;
 export type DirectiveInlineHandlerArgs = InlineHandlerArgs;
@@ -51,6 +51,6 @@ declare module 'markdown-it' {
     export interface MarkdownItWithDirectives extends MarkdownIt {}
 }
 
-declare function load(md: MarkdownIt): void;
+declare function load(): PluginSimple;
 
 export default load;

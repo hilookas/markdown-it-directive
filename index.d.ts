@@ -2,13 +2,16 @@ import DefaultMarkdownIt, {PluginSimple} from 'markdown-it';
 import * as StateInline from 'markdown-it/lib/rules_inline/state_inline';
 import * as StateBlock from 'markdown-it/lib/rules_block/state_block';
 
+export type DirectiveAttrs = Record<string, string>;
+export type DirectiveDests = ["link"|"string", string][];
+
 interface InlineHandlerArgs {
     state: StateInline;
-    content: string;
-    dests: Record<string, string>[];
-    attrs: Record<string, string>[]
-    contentStart: number;
-    contentEnd: number;
+    content: string | undefined;
+    dests: DirectiveDests | undefined;
+    attrs: DirectiveAttrs | undefined;
+    contentStart: number | undefined;
+    contentEnd: number | undefined;
     directiveStart: number;
     directiveEnd: number;
 }
@@ -16,15 +19,15 @@ interface BlockHandlerArgs {
     state: StateBlock;
     content?: string;
     contentTitle: string;
-    inlineContent: string;
-    dests: Record<string, string>[];
-    attrs: Record<string, string>[];
+    inlineContent: string | undefined;
+    dests: DirectiveAttrs | undefined;
+    attrs: DirectiveAttrs | undefined;
     contentStartLine?: number;
     contentEndLine?: number;
     contentTitleStart: number;
     contentTitleEnd: number;
-    inlineContentStart: number;
-    inlineContentEnd: number;
+    inlineContentStart: number | undefined;
+    inlineContentEnd: number | undefined;
     directiveStartLine: number;
     directiveEndLine: number;
 }
@@ -51,6 +54,6 @@ declare module 'markdown-it' {
     export interface MarkdownItWithDirectives extends MarkdownIt {}
 }
 
-declare function load(): PluginSimple;
+declare const load: PluginSimple;
 
 export default load;

@@ -1,8 +1,5 @@
 'use strict';
 
-const { normalizeReference } = require('markdown-it/lib/common/utils');
-const StateInline = require('markdown-it/lib/rules_inline/state_inline');
-
 function isBlank(code) {
   switch (code) {
     case 0x09/* TAB */:
@@ -226,13 +223,13 @@ function parseDirective(state, src, pos, max, allowSpaceBetween) {
     const destsEnd = md.helpers.parseLinkLabel(state, destsStart);
     if (destsEnd >= 0) {
       const refText = src.slice(destsStart + 1, destsEnd);
-      const ref = state.env.references[normalizeReference(refText)];
+      const ref = state.env.references[md.utils.normalizeReference(refText)];
       if (ref) {
         dests = [ [ 'link', ref.href ], [ 'string', ref.title ] ];
         pos = destsEnd + 1;
       }
     } else {
-      const ref = state.env.references[normalizeReference(content)];
+      const ref = state.env.references[md.utils.normalizeReference(content)];
       if (ref) {
         dests = [ [ 'link', ref.href ], [ 'string', ref.title ] ];
       }
@@ -341,7 +338,7 @@ function blockDirectiveRule(state, startLine, endLine, silent) {
 
   // parseLinkLabel need a StateInline state instead of StateBlock state
   // which don't have a skipToken method
-  const inlineState = new StateInline(src, md, state.env, []);
+  const inlineState = new md.inline.State(src, md, state.env, []);
   const rst = parseDirective(inlineState, src, pos, max, true);
   if (rst === null) return false;
   const { directiveName, content: inlineContent, dests, attrs, contentStart: inlineContentStart, contentEnd: inlineContentEnd } = rst;
@@ -411,7 +408,7 @@ function blockDirectiveRule(state, startLine, endLine, silent) {
   return true;
 }
 
-function load(md, options) {
+function load(md) {
   if (md.inlineDirectives) return;
 
   // init

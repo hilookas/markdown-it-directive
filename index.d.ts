@@ -20,7 +20,7 @@ interface BlockHandlerArgs {
     content?: string;
     contentTitle: string;
     inlineContent: string | undefined;
-    dests: DirectiveAttrs | undefined;
+    dests: DirectiveDests | undefined;
     attrs: DirectiveAttrs | undefined;
     contentStartLine?: number;
     contentEndLine?: number;

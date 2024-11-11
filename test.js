@@ -338,6 +338,14 @@ nextlineend
       ===
       '{"directive":"aaa(B)","content":">  text\\n","contentTitle":"","inlineContent":"5542","dests":[["link","/aaa"]],"attrs":{"class":"cls"}}'
     );
+    // should correct parse inline directive markup without content and dests, while the markdown markup contains references
+    assert(
+      md.render(`:dir
+
+  [ref]: https://example.com/`)
+      ===
+      '<p>:dir</p>\n'
+    )
   } ],
 ];
 

@@ -301,12 +301,18 @@ function findNextLine(src, startLine, endLine, state) {
     const max = state.eMarks[line];
     let pos = state.bMarks[line] + state.tShift[line];
     let pos2 = state.skipChars(pos, 0x3A);
-    if (pos2 - pos < 3) continue; // not a start mark or a close mark
-    if (pos2 === max) {
-      // close mark
-      --level;
-    } else {
-      // open mark
+    let colonsCount = pos2 - pos;
+
+    if (colonsCount >= 3) {
+      pos2 = skipBlanks(src, pos2, max);
+      if (pos2 === max) {
+        --level; // close mark
+        continue;
+      }
+    }
+
+    // if it's an opening marker, increase nesting level
+    if (colonsCount >= 3 && pos2 < max) {
       ++level;
     }
   }

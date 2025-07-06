@@ -422,7 +422,7 @@ function load(md) {
   md.blockDirectives = {}
 
   md.inline.ruler.push('inline_directive', inlineDirectiveRule);
-  md.block.ruler.before('paragraph', 'block_directive', blockDirectiveRule);
+  md.block.ruler.before('heading', 'block_directive', blockDirectiveRule);
 }
 
 module.exports = load;

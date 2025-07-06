@@ -390,6 +390,15 @@ text
         '{"directive":"aaa(B)","content":"text\\n","contentTitle":""}'
     );
 
+    assert(
+        'should process directive before heading and keep dash in content',
+        md.render(`:::aaa
+-
+:::`)
+        ,
+        '{"directive":"aaa(B)","content":"-\\n","contentTitle":""}'
+    );
+
   } ],
 ];
 

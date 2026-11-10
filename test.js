@@ -399,6 +399,27 @@ text
         '{"directive":"aaa(B)","content":"-\\n","contentTitle":""}'
     );
 
+    assert(
+        'should parse attribute named like an inherited object property',
+        md.render(':aaa{constructor="x"}')
+        ,
+        '<p>{"directive":"aaa","attrs":{"constructor":"x"}}</p>\n'
+    );
+
+    assert(
+        'should collect repeated attribute named like an inherited object property',
+        md.render('::aaa{constructor="x" constructor="y"}')
+        ,
+        '{"directive":"aaa(B)","contentTitle":"","attrs":{"constructor":["x","y"]}}'
+    );
+
+    assert(
+        'should parse block directive with content and attribute named like an inherited object property',
+        md.render(':::aaa{constructor="x"}\ntext\n:::')
+        ,
+        '{"directive":"aaa(B)","content":"text\\n","contentTitle":"","attrs":{"constructor":"x"}}'
+    );
+
   } ],
 ];
 

@@ -200,7 +200,9 @@ function parseDirective(state, src, pos, max, allowSpaceBetween) {
 
   // Link text (optional)
   const labelStart = pos,
-        labelEnd = md.helpers.parseLinkLabel(state, labelStart);
+        labelEnd = src.charCodeAt(labelStart) === 0x5B/* [ */
+          ? md.helpers.parseLinkLabel(state, labelStart)
+          : -1;
   let content;
   let contentStart, contentEnd;
   if (labelEnd >= 0) {

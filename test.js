@@ -225,6 +225,20 @@ const cases = [
       ':a1f[aaab](&quot;aaaa&quot; aaaa){a111=5555}'
     );
 
+    assert(
+      'should not read a label that does not start with `[`',
+      md.renderInline(':aaa x]')
+      ,
+      '{"directive":"aaa"} x]'
+    );
+
+    assert(
+      'should keep a link that contains a directive without a label',
+      md.renderInline('[a :aaa b](/c)')
+      ,
+      '<a href="/c">a {"directive":"aaa"} b</a>'
+    );
+
 
 
     // Block
@@ -242,6 +256,13 @@ const cases = [
       md.render('::a')
       ,
       '{"directive":"a","contentTitle":""}'
+    );
+
+    assert(
+      'should not read a block label that does not start with `[`',
+      md.render('::aaa x]')
+      ,
+      '{"directive":"aaa(B)","contentTitle":"x]"}'
     );
 
     assert(

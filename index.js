@@ -101,6 +101,14 @@ function parseUnsurroundedName(src, pos, max) {
   return { pos, name: src.slice(oldPos, pos) };
 }
 
+function pushAttr(attrs, key, value) {
+  if (Object.prototype.hasOwnProperty.call(attrs, key)) {
+    attrs[key].push(value);
+  } else {
+    attrs[key] = [ value ];
+  }
+}
+
 function parseAttrLabel(md, src, pos, max) {
   if (pos >= max) return null;
   if (src.charCodeAt(pos) !== 0x7B/* { */) return null;
@@ -126,11 +134,7 @@ function parseAttrLabel(md, src, pos, max) {
       if (rst === null) return null;
       pos = rst.pos;
       const key = 'id', value = rst.name;
-      if (typeof attrs[key] === 'undefined') {
-        attrs[key] = [ value ];
-      } else {
-        attrs[key].push(value);
-      }
+      pushAttr(attrs, key, value);
     } else if (c === 0x2E/* . */) {
       // class
       ++pos;
@@ -139,11 +143,7 @@ function parseAttrLabel(md, src, pos, max) {
       pos = rst.pos;
       // store
       const key = 'class', value = rst.name;
-      if (typeof attrs[key] === 'undefined') {
-        attrs[key] = [ value ];
-      } else {
-        attrs[key].push(value);
-      }
+      pushAttr(attrs, key, value);
     } else {
       // normal attrs
       // key
@@ -171,11 +171,7 @@ function parseAttrLabel(md, src, pos, max) {
         pos = rst.pos;
       }
       // store
-      if (typeof attrs[key] === 'undefined') {
-        attrs[key] = [ value ];
-      } else {
-        attrs[key].push(value);
-      }
+      pushAttr(attrs, key, value);
     }
 
     // there must be a blank between attrs
